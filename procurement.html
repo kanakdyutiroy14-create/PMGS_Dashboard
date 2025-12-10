@@ -1,0 +1,1268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>WAI Project Dashboard – Electronics / Semiconductor Components</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: #f5f7fb;
+      color: #223;
+    }
+
+    header {
+      background: #0b3c7d;
+      color: #fff;
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 22px;
+      letter-spacing: 0.04em;
+    }
+
+    header span {
+      font-size: 13px;
+      opacity: 0.95;
+    }
+
+    .tabs {
+      display: flex;
+      background: #ffffff;
+      padding: 8px 16px;
+      border-bottom: 1px solid #d7deea;
+      gap: 8px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .tab-btn {
+      border: none;
+      background: #e6ecf7;
+      padding: 8px 14px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 13px;
+      transition: all 0.2s ease;
+    }
+
+    .tab-btn.active {
+      background: linear-gradient(135deg, #0f3f8c, #2563eb);
+      color: #fff;
+      box-shadow: 0 3px 10px rgba(15, 23, 42, 0.35);
+    }
+
+    main {
+      padding: 16px 24px 32px;
+      max-width: 1150px;
+      margin: 0 auto;
+    }
+
+    section {
+      display: none;
+      animation: fadeIn 0.25s ease;
+    }
+
+    section.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    h2 {
+      margin-top: 0;
+      font-size: 20px;
+      color: #0b3c7d;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 16px 18px;
+      margin-bottom: 18px;
+      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
+    }
+
+    .card-title {
+      font-weight: 600;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .info-icon {
+      font-size: 11px;
+      cursor: help;
+      color: #64748b;
+    }
+
+    .filters {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+      align-items: center;
+    }
+
+    select, input[type="text"], input[type="range"] {
+      padding: 6px 10px;
+      border-radius: 10px;
+      border: 1px solid #cbd5e1;
+      font-size: 13px;
+      background: #f8fafc;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 8px;
+      font-size: 13px;
+    }
+
+    th,
+    td {
+      padding: 8px 10px;
+      border-bottom: 1px solid #e2e8f0;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: #f1f5f9;
+      font-weight: 600;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    tr:hover td {
+      background: #f8fafc;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 999px;
+      background: #eef2ff;
+      color: #4338ca;
+      font-size: 11px;
+      margin: 2px 2px 0 0;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      background: #e0f2fe;
+      color: #0369a1;
+      margin-right: 4px;
+    }
+
+    .pill {
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 600;
+      display: inline-block;
+      color: #0f172a;
+    }
+
+    .pill.low  { background: #bbf7d0; }
+    .pill.mid  { background: #fee2e2; }
+    .pill.high { background: #fecaca; }
+
+    .badge-score {
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: #e0f2fe;
+      color: #0369a1;
+    }
+
+    canvas {
+      max-width: 100%;
+    }
+
+    .hint {
+      font-size: 11px;
+      color: #64748b;
+      margin-top: 4px;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 2fr 1.5fr;
+      gap: 18px;
+    }
+
+    @media (max-width: 900px) {
+      .two-col {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .overview-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    @media (max-width: 900px) {
+      .overview-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .metric-card {
+      padding: 12px 14px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #eef2ff, #e0f2fe);
+      box-shadow: 0 6px 16px rgba(15, 23, 42, 0.12);
+    }
+
+    .metric-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #64748b;
+      margin-bottom: 4px;
+    }
+
+    .metric-value {
+      font-size: 20px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .metric-sub {
+      font-size: 12px;
+      color: #475569;
+      margin-top: 3px;
+    }
+
+    .score-row-selected td {
+      background: #eff6ff !important;
+    }
+
+    .slider-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      font-size: 12px;
+    }
+
+    .slider-label {
+      width: 80px;
+      font-weight: 500;
+    }
+
+    .slider-value {
+      width: 40px;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .dual-box {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    @media (max-width: 700px) {
+      .dual-box {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .dual-pill {
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      font-size: 13px;
+    }
+
+    .dual-title {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #64748b;
+      margin-bottom: 4px;
+    }
+
+    .dual-name {
+      font-size: 16px;
+      font-weight: 600;
+    }
+  </style>
+
+  <!-- Chart.js 2.9.4 -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
+</head>
+<body>
+<header>
+  <div>
+    <h1>WAI Project Dashboard</h1>
+    <span>Electronics – Semiconductor Components • Company: Samsung Electronics</span>
+  </div>
+  <span>Student: Kanakdyuti Roy · Roll: M077-24</span>
+</header>
+
+<div class="tabs">
+  <button class="tab-btn active" data-tab="tab1">Task 1 – Supplier Intelligence</button>
+  <button class="tab-btn" data-tab="tab2">Task 2 – Contract Selection</button>
+  <button class="tab-btn" data-tab="tab3">Task 3 – Supplier Scorecard</button>
+</div>
+
+<main>
+
+  <!-- Overview metrics -->
+  <div class="card">
+    <div class="card-title">Dashboard Snapshot – Key Procurement Insights</div>
+    <div class="overview-grid">
+      <div class="metric-card">
+        <div class="metric-label">Total Suppliers Analysed</div>
+        <div class="metric-value" id="metric-supplier-count">–</div>
+        <div class="metric-sub">Top global semiconductor partners in current analysis.</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-label">Lowest Country Risk (Scenario)</div>
+        <div class="metric-value" id="metric-lowest-risk">–</div>
+        <div class="metric-sub">Based on average of political, logistics, compliance & ESG in selected scenario.</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-label">Top Ranked by Scorecard</div>
+        <div class="metric-value" id="metric-top-scorecard">–</div>
+        <div class="metric-sub">Highest weighted total score across all evaluation dimensions.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TASK 1 -->
+  <section id="tab1" class="active">
+    <h2>Task 1: Supplier Market Intelligence – Semiconductor Components</h2>
+
+    <div class="card two-col">
+      <div>
+        <div class="card-title">
+          Top 5 Global Suppliers – Data View
+          <span class="info-icon" title="This table and charts use GenAI + research-based data for key global semiconductor suppliers.">ℹ</span>
+        </div>
+        <div class="filters">
+          <select id="countryFilter">
+            <option value="All">Filter by Country (All)</option>
+          </select>
+          <select id="capabilityFilter">
+            <option value="All">Filter by Capability (All)</option>
+          </select>
+          <input type="text" id="supplierSearch" placeholder="Search supplier by name..." />
+          <select id="scenarioSelect">
+            <option value="base">Scenario: Base Case</option>
+            <option value="geo">Scenario: Geopolitical Escalation</option>
+            <option value="logistics">Scenario: Logistics Disruption</option>
+            <option value="esg">Scenario: ESG-Focused Sourcing</option>
+          </select>
+        </div>
+        <table id="supplierTable">
+          <thead>
+            <tr>
+              <th>Supplier</th>
+              <th>Country</th>
+              <th>Core Capabilities</th>
+              <th>Key Differentiators</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        <p class="hint">
+          Use filters and scenario toggle to see how risk profiles change for each supplier.
+        </p>
+      </div>
+
+      <div>
+        <div class="card-title">
+          Risk Overview – All Suppliers (Bar Chart)
+          <span class="info-icon" title="Scores 1–5: higher value means higher risk in that dimension.">ℹ</span>
+        </div>
+        <div style="height: 220px;">
+          <canvas id="riskBarChart"></canvas>
+        </div>
+        <p class="hint">
+          Grouped bar chart comparing risk scores (1–5) across political, logistics, regulatory and ESG dimensions.
+        </p>
+
+        <div class="card-title" style="margin-top: 14px;">
+          Supplier Risk Profile (Radar)
+          <span class="info-icon" title="Radar chart shows scenario-adjusted risk for the selected supplier.">ℹ</span>
+        </div>
+        <div class="filters">
+          <label for="supplierSelect" style="font-size: 13px; font-weight: 500;">Supplier:</label>
+          <select id="supplierSelect"></select>
+        </div>
+        <div style="height: 300px;">
+          <!-- bigger radar -->
+          <canvas id="riskRadarChart"></canvas>
+        </div>
+
+        <div class="card-title" style="margin-top: 14px;">
+          Region Mix – Supplier Footprint
+          <span class="info-icon" title="Shows concentration of suppliers by world region.">ℹ</span>
+        </div>
+        <div style="height: 200px;">
+          <canvas id="regionPieChart"></canvas>
+        </div>
+        <p class="hint">
+          Donut chart summarising how supplier base is split across Asia, North America and Europe.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- TASK 2 -->
+  <section id="tab2">
+    <h2>Task 2: GenAI-Supported Contract Selection</h2>
+
+    <div class="card">
+      <div class="card-title">
+        Contract Type Comparison
+        <span class="info-icon" title="Links each category to the contract structure that best balances cost predictability and risk sharing.">ℹ</span>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Product / Service</th>
+            <th>Recommended Contract</th>
+            <th>Cost Predictability</th>
+            <th>Market Volatility</th>
+            <th>Duration & Volume Fit</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Standard passive components<br/>(resistors, capacitors)</td>
+            <td><span class="badge">Firm Fixed Price (FFP)</span></td>
+            <td><span class="pill high">High</span></td>
+            <td><span class="pill low">Low</span></td>
+            <td><span class="pill high">Stable annual volumes</span></td>
+            <td>Commodity items with predictable demand; annual or multi-year fixed price agreements with volume
+              brackets ensure certainty.</td>
+          </tr>
+          <tr>
+            <td>Advanced node wafers<br/>(5 nm / 3 nm)</td>
+            <td><span class="badge">Volume-Commit & Index-Linked</span></td>
+            <td><span class="pill mid">Medium</span></td>
+            <td><span class="pill high">High</span></td>
+            <td><span class="pill mid">Ramp-up volumes</span></td>
+            <td>Supply/demand imbalances and technology node transitions cause volatility. Use take-or-pay volumes and
+              index-linked pricing to share risk.</td>
+          </tr>
+          <tr>
+            <td>Custom ASIC design & prototyping</td>
+            <td><span class="badge">Cost-Reimbursable + Incentive Fee</span></td>
+            <td><span class="pill low">Low</span></td>
+            <td><span class="pill mid">Medium</span></td>
+            <td><span class="pill mid">Uncertain scope</span></td>
+            <td>R&D heavy; scope and costs evolve. Cost reimbursable contract with milestone-based incentive encourages
+              innovation while sharing risk.</td>
+          </tr>
+          <tr>
+            <td>SMT equipment maintenance</td>
+            <td><span class="badge">Time & Materials (T&M) + SLA</span></td>
+            <td><span class="pill mid">Medium</span></td>
+            <td><span class="pill mid">Medium</span></td>
+            <td><span class="pill high">Ongoing services</span></td>
+            <td>Use hourly rate with service level agreements (e.g., maximum downtime) to ensure responsiveness while
+              capping annual spend.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="card-title" style="margin-top: 16px;">
+        Contract Type Risk/Benefit Profile (Radar)
+        <span class="info-icon" title="Compares cost predictability, flexibility, buyer risk and supplier incentive strength for each contract type.">ℹ</span>
+      </div>
+      <div style="height: 260px;">
+        <canvas id="contractRadarChart"></canvas>
+      </div>
+      <p class="hint">
+        Radar chart visualising why different contract structures are suited to different categories.
+      </p>
+    </div>
+  </section>
+
+  <!-- TASK 3 -->
+  <section id="tab3">
+    <h2>Task 3: GenAI-Enhanced Supplier Evaluation Scorecard</h2>
+
+    <!-- Weight sliders -->
+    <div class="card">
+      <div class="card-title">
+        Scorecard Weighting Controls
+        <span class="info-icon" title="Adjust importance of each dimension; weights automatically normalise to 100%.">ℹ</span>
+      </div>
+      <div class="filters" style="flex-direction: column; align-items: stretch; gap: 8px;">
+        <div class="slider-row">
+          <span class="slider-label">Technical</span>
+          <input type="range" id="slider-tech" min="0" max="100" value="25" />
+          <span class="slider-value" id="slider-tech-val">25%</span>
+        </div>
+        <div class="slider-row">
+          <span class="slider-label">Quality</span>
+          <input type="range" id="slider-quality" min="0" max="100" value="20" />
+          <span class="slider-value" id="slider-quality-val">20%</span>
+        </div>
+        <div class="slider-row">
+          <span class="slider-label">Financial</span>
+          <input type="range" id="slider-financial" min="0" max="100" value="20" />
+          <span class="slider-value" id="slider-financial-val">20%</span>
+        </div>
+        <div class="slider-row">
+          <span class="slider-label">ESG</span>
+          <input type="range" id="slider-esg" min="0" max="100" value="15" />
+          <span class="slider-value" id="slider-esg-val">15%</span>
+        </div>
+        <div class="slider-row">
+          <span class="slider-label">Innovation</span>
+          <input type="range" id="slider-innovation" min="0" max="100" value="20" />
+          <span class="slider-value" id="slider-innovation-val">20%</span>
+        </div>
+      </div>
+      <p class="hint">
+        Move the sliders to run “what-if” analysis – e.g., increase ESG weight and see which supplier becomes most attractive.
+      </p>
+    </div>
+
+    <!-- Dual sourcing recommendation -->
+    <div class="card">
+      <div class="card-title">
+        Dual-Sourcing Recommendation
+        <span class="info-icon" title="Suggests a primary–secondary supplier pair balancing performance with country risk.">ℹ</span>
+      </div>
+      <div class="dual-box">
+        <div class="dual-pill">
+          <div class="dual-title">Primary (Performance Leader)</div>
+          <div class="dual-name" id="dual-primary">–</div>
+          <div style="font-size: 12px; color: #4b5563;" id="dual-primary-sub">Based on highest weighted total score.</div>
+        </div>
+        <div class="dual-pill">
+          <div class="dual-title">Secondary (Risk Balancer)</div>
+          <div class="dual-name" id="dual-secondary">–</div>
+          <div style="font-size: 12px; color: #4b5563;" id="dual-secondary-sub">
+            Supplier with strong score and lower or comparable country risk in the current scenario.
+          </div>
+        </div>
+      </div>
+      <p class="hint">
+        Use this pair as a starting point for designing dual-sourcing strategies for critical components.
+      </p>
+    </div>
+
+    <div class="card">
+      <div class="card-title">
+        Weighted Supplier Scorecard (Table)
+        <span class="info-icon" title="Scores (1–10) reflect each supplier’s performance on the selected dimensions.">ℹ</span>
+      </div>
+      <table id="scorecardTable">
+        <thead>
+          <tr>
+            <th>Supplier</th>
+            <th id="th-tech">Tech (25%)</th>
+            <th id="th-quality">Quality (20%)</th>
+            <th id="th-financial">Financial (20%)</th>
+            <th id="th-esg">ESG (15%)</th>
+            <th id="th-innovation">Innovation (20%)</th>
+            <th>Total Score</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <p class="hint">
+        Click a row to highlight that supplier in the chart below.
+      </p>
+
+      <div class="card-title" style="margin-top: 14px;">
+        Total Score Comparison (Horizontal Bar)
+        <span class="info-icon" title="Shows how overall ranking changes as you adjust weights.">ℹ</span>
+      </div>
+      <div style="height: 260px;">
+        <canvas id="scoreBarChart"></canvas>
+      </div>
+      <p class="hint">
+        Horizontal bar chart showing weighted total scores for all suppliers.
+      </p>
+    </div>
+  </section>
+</main>
+
+<script>
+  Chart.defaults.global.defaultFontFamily = 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+  Chart.defaults.global.defaultFontColor = '#1e293b';
+  Chart.defaults.global.defaultFontSize = 12;
+  Chart.defaults.global.tooltips.backgroundColor = 'rgba(15, 23, 42, 0.9)';
+  Chart.defaults.global.tooltips.cornerRadius = 6;
+
+  const suppliers = [
+    {
+      name: "TSMC",
+      country: "Taiwan",
+      capabilities: ["Advanced foundry (5nm/3nm)", "EUV lithography", "High-volume wafer fab"],
+      differentiators: ["Pure-play foundry model", "Largest global capacity", "Strong fabless ecosystem"],
+      risk: { political: 5, logistics: 4, compliance: 3, esg: 3 }
+    },
+    {
+      name: "Samsung Electronics",
+      country: "South Korea",
+      capabilities: ["Memory (DRAM/NAND)", "Logic chips & processors", "Foundry services"],
+      differentiators: ["Vertical integration", "Leading memory market share", "Integrated logic & memory"],
+      risk: { political: 3, logistics: 3, compliance: 2, esg: 3 }
+    },
+    {
+      name: "Intel",
+      country: "USA",
+      capabilities: ["CPU design & manufacturing", "Foundry (IFS)", "Advanced packaging"],
+      differentiators: ["x86 architecture leadership", "Integrated design & manufacturing", "Expanding foundry services"],
+      risk: { political: 2, logistics: 2, compliance: 3, esg: 2 }
+    },
+    {
+      name: "Texas Instruments",
+      country: "USA",
+      capabilities: ["Analog & power ICs", "Embedded processors", "Broad product catalog"],
+      differentiators: ["Largest analog manufacturer", "High reliability & support", "Expanding 300mm capacity"],
+      risk: { political: 2, logistics: 2, compliance: 2, esg: 2 }
+    },
+    {
+      name: "Infineon Technologies",
+      country: "Germany",
+      capabilities: ["Power semiconductors", "Automotive & industrial chips", "SiC & GaN portfolio"],
+      differentiators: ["Automotive-grade quality", "Power efficiency leadership", "Strong ESG focus"],
+      risk: { political: 2, logistics: 3, compliance: 1, esg: 1 }
+    }
+  ];
+
+  let rawWeights = { tech: 25, quality: 20, financial: 20, esg: 15, innovation: 20 };
+  let weights = { tech: 0.25, quality: 0.20, financial: 0.20, esg: 0.15, innovation: 0.20 };
+
+  const scorecardData = [
+    { name: "TSMC", tech: 10, quality: 9, financial: 9, esg: 7, innovation: 9 },
+    { name: "Samsung Electronics", tech: 9, quality: 8, financial: 8, esg: 7, innovation: 8 },
+    { name: "Intel", tech: 8, quality: 8, financial: 8, esg: 8, innovation: 7 },
+    { name: "Texas Instruments", tech: 8, quality: 9, financial: 8, esg: 8, innovation: 7 },
+    { name: "Infineon Technologies", tech: 8, quality: 9, financial: 7, esg: 9, innovation: 8 }
+  ];
+
+  function calcTotal(row) {
+    return (
+      row.tech * weights.tech +
+      row.quality * weights.quality +
+      row.financial * weights.financial +
+      row.esg * weights.esg +
+      row.innovation * weights.innovation
+    ).toFixed(1);
+  }
+
+  let currentScenario = 'base';
+  let riskBarChart;
+  let riskRadarChart;
+  let regionPieChart;
+  let scoreBarChart;
+  let contractRadarChart;
+  let selectedScoreSupplier = null;
+
+  function regionOf(country) {
+    if (country === "Taiwan" || country === "South Korea") return "Asia";
+    if (country === "USA") return "North America";
+    if (country === "Germany") return "Europe";
+    return "Other";
+  }
+
+  function getAdjustedRisk(s, dim) {
+    const base = s.risk[dim];
+    if (currentScenario === 'base') return base;
+
+    if (currentScenario === 'geo') {
+      if (dim === 'political' || dim === 'compliance') {
+        return Math.min(5, base + 1);
+      }
+      return base;
+    }
+
+    if (currentScenario === 'logistics') {
+      if (dim === 'logistics') {
+        return Math.min(5, base + 1);
+      }
+      return base;
+    }
+
+    if (currentScenario === 'esg') {
+      if (dim === 'esg') {
+        return Math.min(5, base + 1);
+      }
+      return base;
+    }
+
+    return base;
+  }
+
+  function updateOverviewMetrics() {
+    document.getElementById("metric-supplier-count").textContent = suppliers.length;
+
+    let lowest = null;
+    suppliers.forEach(s => {
+      const avg = (
+        getAdjustedRisk(s, 'political') +
+        getAdjustedRisk(s, 'logistics') +
+        getAdjustedRisk(s, 'compliance') +
+        getAdjustedRisk(s, 'esg')
+      ) / 4;
+      if (lowest === null || avg < lowest.avg) {
+        lowest = { name: s.name, avg };
+      }
+    });
+    if (lowest) {
+      document.getElementById("metric-lowest-risk").textContent = lowest.name;
+    }
+
+    let top = null;
+    scorecardData.forEach(r => {
+      const total = parseFloat(calcTotal(r));
+      if (top === null || total > top.total) {
+        top = { name: r.name, total };
+      }
+    });
+    if (top) {
+      document.getElementById("metric-top-scorecard").textContent = top.name;
+    }
+  }
+
+  function initFilters() {
+    const countryFilter = document.getElementById("countryFilter");
+    const capabilityFilter = document.getElementById("capabilityFilter");
+    const countries = new Set();
+    const capabilities = new Set();
+    suppliers.forEach((s) => {
+      countries.add(s.country);
+      s.capabilities.forEach((c) => capabilities.add(c));
+    });
+    countries.forEach((c) => {
+      const opt = document.createElement("option");
+      opt.value = c;
+      opt.textContent = c;
+      countryFilter.appendChild(opt);
+    });
+    capabilities.forEach((cap) => {
+      const opt = document.createElement("option");
+      opt.value = cap;
+      opt.textContent = cap;
+      capabilityFilter.appendChild(opt);
+    });
+  }
+
+  function renderSuppliers() {
+    const tbody = document.querySelector("#supplierTable tbody");
+    tbody.innerHTML = "";
+    const cVal = document.getElementById("countryFilter").value;
+    const capVal = document.getElementById("capabilityFilter").value;
+    const searchVal = document.getElementById("supplierSearch").value.trim().toLowerCase();
+
+    suppliers.forEach((s) => {
+      const countryMatch = cVal === "All" || s.country === cVal;
+      const capMatch = capVal === "All" || s.capabilities.includes(capVal);
+      const nameMatch = s.name.toLowerCase().includes(searchVal);
+      if (!countryMatch || !capMatch || !nameMatch) return;
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${s.name}</td>
+        <td>${s.country}</td>
+        <td>${s.capabilities.map((cap) => `<span class="tag">${cap}</span>`).join("")}</td>
+        <td>${s.differentiators.map((d) => `<span class="tag">${d}</span>`).join("")}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  function buildRiskBarChart() {
+    const canvas = document.getElementById('riskBarChart');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const labels = suppliers.map(s => s.name);
+    const categories = ['political', 'logistics', 'compliance', 'esg'];
+    const categoryLabels = ['Political', 'Logistics', 'Regulatory', 'ESG'];
+    const colors = [
+      'rgba(37, 99, 235, 0.75)',
+      'rgba(234, 88, 12, 0.75)',
+      'rgba(16, 185, 129, 0.75)',
+      'rgba(168, 85, 247, 0.75)'
+    ];
+    const borderColors = [
+      'rgba(37, 99, 235, 1)',
+      'rgba(234, 88, 12, 1)',
+      'rgba(16, 185, 129, 1)',
+      'rgba(168, 85, 247, 1)'
+    ];
+    const datasets = categories.map((cat, i) => ({
+      label: categoryLabels[i],
+      data: suppliers.map(s => getAdjustedRisk(s, cat)),
+      backgroundColor: colors[i],
+      borderColor: borderColors[i],
+      borderWidth: 1.5,
+      hoverBorderWidth: 2.5,
+      hoverBorderColor: '#0f172a'
+    }));
+    const options = {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        yAxes: [{
+          ticks: { beginAtZero: true, min: 0, max: 5, stepSize: 1 },
+          gridLines: { color: '#e2e8f0' },
+        }],
+        xAxes: [{
+          gridLines: { color: '#f1f5f9' },
+        }],
+      },
+      legend: {
+        position: 'top',
+        labels: { boxWidth: 12, padding: 12 }
+      },
+      tooltips: {
+        callbacks: {
+          label: function(tooltipItem, data) {
+            const ds = data.datasets[tooltipItem.datasetIndex];
+            const label = ds.label || '';
+            const value = tooltipItem.yLabel;
+            return label + ': ' + value + '/5';
+          }
+        }
+      }
+    };
+    if (riskBarChart) riskBarChart.destroy();
+    riskBarChart = new Chart(ctx, {
+      type: 'bar',
+      data: { labels, datasets },
+      options,
+    });
+  }
+
+  function initSupplierDropdown() {
+    const select = document.getElementById("supplierSelect");
+    if (!select) return;
+    select.innerHTML = "";
+    suppliers.forEach((s, idx) => {
+      const opt = document.createElement("option");
+      opt.value = s.name;
+      opt.textContent = s.name;
+      if (idx === 0) opt.selected = true;
+      select.appendChild(opt);
+    });
+    select.addEventListener("change", () => {
+      buildRiskRadarChart(select.value);
+    });
+  }
+
+  function buildRiskRadarChart(supplierName) {
+    const canvas = document.getElementById("riskRadarChart");
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    const sup = suppliers.find(s => s.name === supplierName) || suppliers[0];
+    const labels = ["Political", "Logistics", "Regulatory", "ESG"];
+    const data = [
+      getAdjustedRisk(sup, 'political'),
+      getAdjustedRisk(sup, 'logistics'),
+      getAdjustedRisk(sup, 'compliance'),
+      getAdjustedRisk(sup, 'esg')
+    ];
+    if (riskRadarChart) riskRadarChart.destroy();
+    riskRadarChart = new Chart(ctx, {
+      type: "radar",
+      data: {
+        labels,
+        datasets: [{
+          label: sup.name,
+          data,
+          backgroundColor: "rgba(56, 189, 248, 0.18)",
+          borderColor: "rgba(56, 189, 248, 1)",
+          borderWidth: 2,
+          pointBackgroundColor: "rgba(37, 99, 235, 1)",
+          pointRadius: 4,
+          pointHoverRadius: 5
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        legend: { display: false },
+        scale: {
+          ticks: {
+            beginAtZero: true,
+            min: 0,
+            max: 5,
+            stepSize: 1,
+            backdropColor: "transparent"
+          },
+          gridLines: { color: "#e2e8f0" },
+          angleLines: { color: "#cbd5e1" },
+          pointLabels: { fontSize: 11 }
+        },
+        tooltips: {
+          callbacks: {
+            label: function(tooltipItem, data) {
+              const label = data.labels[tooltipItem.index] || '';
+              const value = data.datasets[0].data[tooltipItem.index];
+              return label + ': ' + value + '/5';
+            }
+          }
+        }
+      }
+    });
+  }
+
+  function buildRegionPieChart() {
+    const canvas = document.getElementById("regionPieChart");
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    const counts = { "Asia": 0, "North America": 0, "Europe": 0 };
+    suppliers.forEach(s => {
+      const r = regionOf(s.country);
+      if (counts[r] !== undefined) counts[r] += 1;
+    });
+    const labels = Object.keys(counts);
+    const data = labels.map(l => counts[l]);
+    if (regionPieChart) regionPieChart.destroy();
+    regionPieChart = new Chart(ctx, {
+      type: "doughnut",
+      data: {
+        labels,
+        datasets: [{
+          data,
+          backgroundColor: [
+            "rgba(59, 130, 246, 0.8)",
+            "rgba(34, 197, 94, 0.8)",
+            "rgba(249, 115, 22, 0.8)"
+          ],
+          borderColor: "#e2e8f0",
+          borderWidth: 1.5
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        legend: { position: "bottom" }
+      }
+    });
+  }
+
+  function renderScorecard() {
+    const tbody = document.querySelector("#scorecardTable tbody");
+    tbody.innerHTML = "";
+    const sorted = [...scorecardData].sort((a, b) => parseFloat(calcTotal(b)) - parseFloat(calcTotal(a)));
+    sorted.forEach((r) => {
+      const total = calcTotal(r);
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${r.name}</td>
+        <td>${r.tech}</td>
+        <td>${r.quality}</td>
+        <td>${r.financial}</td>
+        <td>${r.esg}</td>
+        <td>${r.innovation}</td>
+        <td><span class="badge-score">${total}</span></td>
+      `;
+      tr.addEventListener("click", () => {
+        selectedScoreSupplier = r.name;
+        highlightSelectedRow();
+        buildScoreBarChart();
+      });
+      tbody.appendChild(tr);
+    });
+  }
+
+  function highlightSelectedRow() {
+    const rows = document.querySelectorAll("#scorecardTable tbody tr");
+    rows.forEach(row => row.classList.remove("score-row-selected"));
+    if (!selectedScoreSupplier) return;
+    rows.forEach(row => {
+      const nameCell = row.querySelector("td");
+      if (nameCell && nameCell.textContent === selectedScoreSupplier) {
+        row.classList.add("score-row-selected");
+      }
+    });
+  }
+
+  function buildScoreBarChart() {
+    const canvas = document.getElementById("scoreBarChart");
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    const labels = scorecardData.map(r => r.name);
+    const totals = scorecardData.map(r => parseFloat(calcTotal(r)));
+
+    const baseColor = "rgba(37, 99, 235, 0.25)";
+    const highlightColor = "rgba(37, 99, 235, 0.8)";
+    const backgroundColors = labels.map(name =>
+      selectedScoreSupplier && name === selectedScoreSupplier ? highlightColor : baseColor
+    );
+
+    if (scoreBarChart) scoreBarChart.destroy();
+    scoreBarChart = new Chart(ctx, {
+      type: "horizontalBar",
+      data: {
+        labels,
+        datasets: [{
+          label: "Weighted Total Score",
+          data: totals,
+          backgroundColor: backgroundColors,
+          borderColor: "rgba(37, 99, 235, 1)",
+          borderWidth: 2,
+          hoverBackgroundColor: "rgba(37, 99, 235, 0.6)"
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          xAxes: [{
+            ticks: { beginAtZero: true, suggestedMax: 10 },
+            gridLines: { color: "#e2e8f0" }
+          }],
+          yAxes: [{
+            gridLines: { color: "#f1f5f9" }
+          }]
+        },
+        legend: { display: false },
+        tooltips: {
+          callbacks: {
+            label: function(tooltipItem, data) {
+              return data.datasets[0].label + ': ' + tooltipItem.xLabel;
+            }
+          }
+        }
+      }
+    });
+  }
+
+  function buildContractRadarChart() {
+    const canvas = document.getElementById("contractRadarChart");
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    const labels = ["Cost Predictability", "Flexibility", "Buyer Risk", "Supplier Incentive"];
+    const datasets = [
+      {
+        label: "FFP",
+        data: [5, 1, 5, 3],
+        backgroundColor: "rgba(37, 99, 235, 0.12)",
+        borderColor: "rgba(37, 99, 235, 1)",
+        borderWidth: 2
+      },
+      {
+        label: "Volume-Commit",
+        data: [4, 3, 3, 4],
+        backgroundColor: "rgba(234, 179, 8, 0.12)",
+        borderColor: "rgba(234, 179, 8, 1)",
+        borderWidth: 2
+      },
+      {
+        label: "Cost-Reimb + Incentive",
+        data: [2, 4, 2, 5],
+        backgroundColor: "rgba(16, 185, 129, 0.12)",
+        borderColor: "rgba(16, 185, 129, 1)",
+        borderWidth: 2
+      },
+      {
+        label: "T&M + SLA",
+        data: [3, 5, 2, 4],
+        backgroundColor: "rgba(168, 85, 247, 0.12)",
+        borderColor: "rgba(168, 85, 247, 1)",
+        borderWidth: 2
+      }
+    ];
+    if (contractRadarChart) contractRadarChart.destroy();
+    contractRadarChart = new Chart(ctx, {
+      type: "radar",
+      data: { labels, datasets },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        legend: { position: "right" },
+        scale: {
+          ticks: {
+            beginAtZero: true,
+            min: 0,
+            max: 5,
+            stepSize: 1,
+            backdropColor: "transparent"
+          },
+          gridLines: { color: "#e2e8f0" },
+          angleLines: { color: "#cbd5e1" },
+          pointLabels: { fontSize: 11 }
+        }
+      }
+    });
+  }
+
+  function updateWeightLabels() {
+    document.getElementById("th-tech").textContent = `Tech (${Math.round(weights.tech * 100)}%)`;
+    document.getElementById("th-quality").textContent = `Quality (${Math.round(weights.quality * 100)}%)`;
+    document.getElementById("th-financial").textContent = `Financial (${Math.round(weights.financial * 100)}%)`;
+    document.getElementById("th-esg").textContent = `ESG (${Math.round(weights.esg * 100)}%)`;
+    document.getElementById("th-innovation").textContent = `Innovation (${Math.round(weights.innovation * 100)}%)`;
+  }
+
+  function updateDualSourcingRecommendation() {
+    const details = suppliers.map(s => {
+      const riskAvg = (
+        getAdjustedRisk(s, 'political') +
+        getAdjustedRisk(s, 'logistics') +
+        getAdjustedRisk(s, 'compliance') +
+        getAdjustedRisk(s, 'esg')
+      ) / 4;
+      const scRow = scorecardData.find(r => r.name === s.name);
+      const score = scRow ? parseFloat(calcTotal(scRow)) : 0;
+      return { name: s.name, avgRisk: riskAvg, score };
+    });
+
+    const primary = details.reduce((best, d) => !best || d.score > best.score ? d : best, null);
+    let secondary = null;
+    details.forEach(d => {
+      if (!primary || d.name === primary.name) return;
+      if (!secondary) secondary = d;
+      else {
+        const betterScore = d.score > secondary.score;
+        const betterRisk = d.avgRisk <= primary.avgRisk && secondary.avgRisk > primary.avgRisk;
+        if (betterRisk || (secondary.avgRisk > primary.avgRisk && betterScore)) {
+          secondary = d;
+        } else if (secondary.avgRisk <= primary.avgRisk && betterScore) {
+          secondary = d;
+        }
+      }
+    });
+
+    if (primary) {
+      document.getElementById("dual-primary").textContent = primary.name;
+      document.getElementById("dual-primary-sub").textContent =
+        `Highest weighted total score (~${primary.score.toFixed(1)}) in current weight setting.`;
+    }
+    if (secondary) {
+      document.getElementById("dual-secondary").textContent = secondary.name;
+      document.getElementById("dual-secondary-sub").textContent =
+        `Good performance (~${secondary.score.toFixed(1)}) with ${secondary.avgRisk <= primary.avgRisk ? "lower or comparable" : "slightly higher"} scenario-adjusted country risk.`;
+    }
+  }
+
+  function updateWeightsFromSliders() {
+    rawWeights.tech = parseInt(document.getElementById("slider-tech").value, 10);
+    rawWeights.quality = parseInt(document.getElementById("slider-quality").value, 10);
+    rawWeights.financial = parseInt(document.getElementById("slider-financial").value, 10);
+    rawWeights.esg = parseInt(document.getElementById("slider-esg").value, 10);
+    rawWeights.innovation = parseInt(document.getElementById("slider-innovation").value, 10);
+
+    const sum = rawWeights.tech + rawWeights.quality + rawWeights.financial + rawWeights.esg + rawWeights.innovation || 1;
+    weights.tech = rawWeights.tech / sum;
+    weights.quality = rawWeights.quality / sum;
+    weights.financial = rawWeights.financial / sum;
+    weights.esg = rawWeights.esg / sum;
+    weights.innovation = rawWeights.innovation / sum;
+
+    document.getElementById("slider-tech-val").textContent = Math.round(weights.tech * 100) + "%";
+    document.getElementById("slider-quality-val").textContent = Math.round(weights.quality * 100) + "%";
+    document.getElementById("slider-financial-val").textContent = Math.round(weights.financial * 100) + "%";
+    document.getElementById("slider-esg-val").textContent = Math.round(weights.esg * 100) + "%";
+    document.getElementById("slider-innovation-val").textContent = Math.round(weights.innovation * 100) + "%";
+
+    updateWeightLabels();
+    renderScorecard();
+    buildScoreBarChart();
+    highlightSelectedRow();
+    updateOverviewMetrics();
+    updateDualSourcingRecommendation();
+  }
+
+  function initTabs() {
+    const buttons = document.querySelectorAll(".tab-btn");
+    const sections = document.querySelectorAll("main section");
+    buttons.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        buttons.forEach((b) => b.classList.remove("active"));
+        sections.forEach((s) => s.classList.remove("active"));
+        btn.classList.add("active");
+        document.getElementById(btn.dataset.tab).classList.add("active");
+
+        if (btn.dataset.tab === "tab1") {
+          buildRiskBarChart();
+          const select = document.getElementById("supplierSelect");
+          const selectedName = select && select.value ? select.value : suppliers[0].name;
+          buildRiskRadarChart(selectedName);
+          buildRegionPieChart();
+        }
+        if (btn.dataset.tab === "tab2") {
+          buildContractRadarChart();
+        }
+        if (btn.dataset.tab === "tab3") {
+          buildScoreBarChart();
+          highlightSelectedRow();
+        }
+      });
+    });
+  }
+
+  window.addEventListener("DOMContentLoaded", () => {
+    initFilters();
+    renderSuppliers();
+    updateOverviewMetrics();
+    buildRiskBarChart();
+    initSupplierDropdown();
+    buildRiskRadarChart(suppliers[0].name);
+    buildRegionPieChart();
+    buildContractRadarChart();
+
+    renderScorecard();
+    buildScoreBarChart();
+    highlightSelectedRow();
+    updateDualSourcingRecommendation();
+    updateWeightLabels();
+    initTabs();
+
+    document.getElementById("countryFilter").addEventListener("change", renderSuppliers);
+    document.getElementById("capabilityFilter").addEventListener("change", renderSuppliers);
+    document.getElementById("supplierSearch").addEventListener("input", renderSuppliers);
+
+    document.getElementById("scenarioSelect").addEventListener("change", (e) => {
+      currentScenario = e.target.value;
+      buildRiskBarChart();
+      const select = document.getElementById("supplierSelect");
+      const selectedName = select && select.value ? select.value : suppliers[0].name;
+      buildRiskRadarChart(selectedName);
+      updateOverviewMetrics();
+      updateDualSourcingRecommendation();
+    });
+
+    ["slider-tech", "slider-quality", "slider-financial", "slider-esg", "slider-innovation"]
+      .forEach(id => {
+        document.getElementById(id).addEventListener("input", updateWeightsFromSliders);
+      });
+
+    updateWeightsFromSliders();
+  });
+</script>
+</body>
+</html>
